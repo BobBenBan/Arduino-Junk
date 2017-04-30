@@ -18,7 +18,7 @@ int const wPly = 6;
 int const wShow = 30;
 int const wBtn = 50;
 int const wWro = 10;
-int const freq[4] = {440,494,550,587};
+int const freq[4] = {440,550,660,783};
 float const freqMult = 1.72;
 void sp(uint8_t p, uint32_t c) {
 #ifdef builtInRing
