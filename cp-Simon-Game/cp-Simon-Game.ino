@@ -14,12 +14,12 @@ uint8_t const lDim = lSel / 15;
 uint8_t const lSec = 50;
 uint8_t const lFls = 255;
 //x10ms
-int const wPly = 6;
+int const wPly = 8;
 int const wShow = 30;
 int const wBtn = 50;
 int const wWro = 10;
-int const freq[4] = {440,494,550,587};
-float const freqMult = 1.72;
+int const freq[4] = {440,494,550,660};
+float const freqMult = 1.33;
 void sp(uint8_t p, uint32_t c) {
 #ifdef builtInRing
   if (p == 5 || p == 11)return;
@@ -63,13 +63,12 @@ uint8_t now = 0;
 uint8_t cor = 0;
 uint8_t stage = 0;
 /* 0: Idle
-   1: Show
-   2: Player
-   3: correct
+   1: Play
+   2: Show
+   3: Player
    4: lose
 */
 bool tap = false;
-bool but = false;
 uint8_t wait = 0;
 void goWait(int tim) {
   wait = tim;
@@ -77,7 +76,7 @@ void goWait(int tim) {
 void next() {
   prev[len] = random(4);
   len++;
-  stage = 1;
+  stage = 2;
   goWait(wBtn);
 }
 void sound(int htz){
@@ -88,7 +87,6 @@ void setup() {
   randomSeed(analogRead(A4));
   CircuitPlayground.begin();
   CircuitPlayground.setAccelRange(LIS3DH_RANGE_2_G);
-  CircuitPlayground.setAccelTap(2, 10);
   ring.begin();
   /*/
     Serial.begin(9600);
@@ -104,19 +102,29 @@ void loop() {
       case 0:
         //sec(pix/3*3, lSec);
         lit[pix] = lSel;
-        if (CircuitPlayground.leftButton() || CircuitPlayground.rightButton()) stage = 4;
+        if (CircuitPlayground.leftButton() || CircuitPlayground.rightButton()) stage = 1;
         break;
-      case 1:
+        case 1: 
+          sound(freq[(now%4)]*((now%8)<4?freqMult:1));
+          sec(now%4,lFls);
+          goWait(wPly);
+          now++;
+          if(now==16) {
+            now = 0;
+            next();
+          }
+        break;
+      case 2:
         sec(prev[now], lFls);
         sound(freq[prev[now]]*freqMult);
         now++;
         if (now == len) {
           now = 0;
-          stage = 2;
+          stage = 3;
         }
         goWait(wShow);
         break;
-      case 2:
+      case 3:
         sec(pix / 3, lSec);
 
 #ifdef builtInRing
@@ -126,7 +134,7 @@ void loop() {
           pix = (rpix > 11) ? 0 : 10;
 #endif
         lit[pix] = lSel;
-        if (CircuitPlayground.getAccelTap() || CircuitPlayground.leftButton() || CircuitPlayground.rightButton()) {
+        if (CircuitPlayground.leftButton() || CircuitPlayground.rightButton()) {
           if (!tap) {
             tap = true;
             if (pix / 3 == prev[now]) {
@@ -139,7 +147,7 @@ void loop() {
                 next();
               }
             } else {
-              stage = 3;
+              stage = 4;
               cor = now;
               now = 0;
               len = 0;
@@ -147,7 +155,7 @@ void loop() {
           }
         } else tap = false;
         break;
-      case 3:
+      case 4:
         sec(prev[cor], lFls);
         sound(freq[prev[cor]]*2);
         now++;
@@ -157,16 +165,7 @@ void loop() {
           now = 0;
         }
         break;
-        case 4: 
-          sound(freq[(now%4)]*((now%8)<4?freqMult:1));
-          sec(now%4,lFls);
-          goWait(wPly);
-          now++;
-          if(now==16) {
-            now = 0;
-            next();
-          }
-        break;
+        
     }
   showPix();
   delay(10);
