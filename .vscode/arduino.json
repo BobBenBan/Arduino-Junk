@@ -1,5 +1,0 @@
-{
-    "board": "adafruit:avr:circuitplay32u4cat",
-    "port": "/dev/cu.usbmodem143301",
-    "sketch": "Annoying_Sound/Annoying_Sound.ino"
-}
