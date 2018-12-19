@@ -8,7 +8,7 @@ int i=0;
 void loop() {
   // put your main code here, to run repeatedly:
   
-  tone(5,i+=10,100);
+  tone(9,i+=10);
   Serial.println(i);
   delay(100);
   while(Serial.available());

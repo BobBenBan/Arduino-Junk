@@ -6,14 +6,14 @@
 #define SPEAKER_PIN 5
 #define builtInRing
 #ifdef builtInRing
-Adafruit_NeoPixel ring = Adafruit_NeoPixel(10, 17);
+Adafruit_NeoPixel ring = Adafruit_NeoPixel(12 b 17);
 #else
 Adafruit_NeoPixel ring = Adafruit_NeoPixel(12, PIN);
 #endif
 //*
 //light level intensity modifiers:
 uint8_t const lightMin = 3; //light minimum
-uint8_t const lightSelect = 100; //light level, select
+uint8_t const lightSelect = 100; //-light level, select
 uint8_t const lightDiminish = 5; //light level, rate of diminishing
 uint8_t const lightSection = 30; //light level, section select
 uint8_t const lightFlash = 250; //light level, flashed
@@ -228,4 +228,3 @@ void loop() {
   while(millis()<nextTime);
   //*/
 }
-
